@@ -1,6 +1,6 @@
 # Architecture
 
-Last updated: 2026-11-25 (Option A decided, Plex added)
+Last updated: 2026-11-25 (Option A decided, Jellyfin chosen for media, Samsung TV and streaming notes added)
 
 This is the design reference to check before spending any money. Each decision is recorded with the choice, the reasons, the cost if it turns out wrong, and what would change it. Update it whenever a decision changes.
 
@@ -8,7 +8,7 @@ This is the design reference to check before spending any money. Each decision i
 
 - Local first, with no outside access. No port forwarding, no remote-access tools.
 - Replace Google Photos. About 1 TB of photos and videos today.
-- Run Pi-hole, Home Assistant, Immich, Forgejo and Plex (movies, shows, music and other media).
+- Run Pi-hole, Home Assistant, Immich, Forgejo and Jellyfin (movies, shows, music and other media).
 - Devices: Zigbee and Z-Wave sensors, plus two displays (one for control, one for information).
 - Budget ceiling: $1,200.
 - Network: a rented eero, connected to an owned modem.
@@ -33,18 +33,18 @@ flowchart TB
         HA["Home Assistant"]
         IMMICH["Immich"]
         FORGEJO["Forgejo"]
-        PLEX["Plex - movies, shows, music"]
+        JELLYFIN["Jellyfin - movies, shows, music"]
         SSD["NVMe SSD - OS and VMs"]
         HDD["4 TB HDD - photo library"]
-        MEDIA["Media drive - size to be decided"]
+        MEDIA["Media drive - added when a library exists"]
         ZB["Zigbee stick"]
         ZW["Z-Wave stick"]
     end
 
     HDD --> BACKUP["External USB drive"]
     HDD --> CLOUD["Encrypted cloud copy"]
-    TV["TVs and streaming devices"] -->|"stream over home network"| PLEX
-    PLEX --> MEDIA
+    TV["Samsung Smart TV"] -->|"stream over home network"| JELLYFIN
+    JELLYFIN --> MEDIA
     MEDIA -.->|"optional copy"| BACKUP
     UPS["UPS"] -.-> SERVER
     UPS -.-> EERO
@@ -72,11 +72,11 @@ flowchart TB
 
     subgraph NAS["2-bay NAS"]
         IMMICH["Immich in Docker"]
-        PLEX["Plex in Docker"]
+        JELLYFIN["Jellyfin in Docker"]
         MIRROR["2 x 4 TB mirrored - photo library"]
     end
 
-    TV["TVs and streaming devices"] -->|"stream over home network"| PLEX
+    TV["TVs and streaming devices"] -->|"stream over home network"| JELLYFIN
     MIRROR --> BACKUP["External USB drive"]
     MIRROR --> CLOUD["Encrypted cloud copy"]
     UPS["UPS"] -.-> SERVER
@@ -124,7 +124,7 @@ Buy a server with a 3.5" bay either way if it fits the budget, so Option A stays
 
 **Status: Decided on 2026-11-25. Option A.**
 
-Plex changes one thing. A media library can be several terabytes, which adds a second drive and pushes Option A toward the top of the budget. If the media library turns out to be large (see D14), revisit Option B, because a NAS then holds both photos and media. Until then, Option A stands.
+Jellyfin adds one thing later. A media library can grow to several terabytes, which means a second drive. You have no library yet, so nothing is bought for it now. If the library grows large (see D14 and D15), revisit Option B, because a NAS can then hold both photos and media. Until then, Option A stands.
 
 ## Decision records
 
@@ -140,7 +140,7 @@ Status values: Decided, Open.
 
 ### D2. Hardware class
 
-- **Choice (Option A):** a used small-form-factor desktop with a 3.5" drive bay, Intel 8th generation or newer, 16 to 32 GB RAM, an NVMe slot and at least 4 USB ports. Pick a CPU **without an "F" suffix** (for example i5-8500, not i5-8400F), so it has Intel integrated graphics for Plex hardware transcoding. Check whether the case has room for a second drive.
+- **Choice (Option A):** a used small-form-factor desktop with a 3.5" drive bay, Intel 8th generation or newer, 16 to 32 GB RAM, an NVMe slot and at least 4 USB ports. Pick a CPU **without an "F" suffix** (for example i5-8500, not i5-8400F), so it has Intel integrated graphics for free Jellyfin hardware transcoding. Check whether the case has room for a second drive.
 - **Choice (Option B):** a used tiny or micro PC is enough, because the photo drive lives in the NAS.
 - **Why:** an SFF desktop has room for a 3.5" photo drive. Tiny and micro models usually do not.
 - **Cost if wrong:** high. The case, bays and RAM ceiling are fixed.
@@ -148,7 +148,7 @@ Status values: Decided, Open.
 
 ### D3. Storage layout
 
-- **Choice (Option A):** NVMe SSD for Proxmox and the VMs, and one 4 TB hard drive for the photo library. No mirror. Plex media gets its own drive, sized in D14, so a full media drive can never crowd out the photos.
+- **Choice (Option A):** NVMe SSD for Proxmox and the VMs, and one 4 TB hard drive for the photo library. No mirror. Media (Jellyfin) gets its own drive later, sized in D15, so a full media drive can never crowd out the photos.
 - **Choice (Option B):** NVMe SSD in the server, and two mirrored 4 TB drives in the NAS.
 - **Why:** 4 TB gives about four times today's 1 TB. A mirror protects uptime, not data.
 - **Cost if wrong:** high if you later want a mirror in Option A, because it needs a second 3.5" bay.
@@ -165,7 +165,7 @@ Status values: Decided, Open.
 
 - **Choice:** the eero's Custom DNS points to Pi-hole, with a public resolver as the second server.
 - **Why:** it applies network-wide and needs no per-device setup, and the second server keeps the internet working when the server is off.
-- **Trade-offs:** Pi-hole sees requests from the eero, so no per-device stats. Some lookups may go to the public resolver and skip blocking. Check how much in the Pi-hole query log.
+- **Trade-offs:** Pi-hole sees requests from the eero, so no per-device stats. Some lookups may go to the public resolver and skip blocking. Check how much in the Pi-hole query log. Test your streaming apps after the switch, because blocking can occasionally break an app. If one breaks, allowlist the domain it needs.
 - **Would change it:** a second Pi-hole on a small device as the secondary, if the leaks bother you.
 - **Status:** Decided for now. Review after a week of real use.
 
@@ -226,25 +226,25 @@ Status values: Decided, Open.
 - **Why:** a dead server must not lock you out of everything.
 - **Status:** Decided. The product choice is **Open**.
 
-### D14. Media server (Plex)
+### D14. Media server (Jellyfin)
 
-- **Choice:** Plex Media Server in its own container or VM named `plex`, local network only, on the free tier to start.
-- **Why:** Plex handles movies, shows, music and other media in one place, with polished apps for TVs and phones.
+- **Choice:** Jellyfin in its own container or VM named `jellyfin`, local network only.
+- **Why:** it is free and open source, needs no vendor account, and includes hardware transcoding at no cost. That fits the local-first goal better than Plex.
 - **Facts checked in November 2026:**
-  - The server software and streaming on your home network are free.
-  - Remote streaming requires a Plex Pass or a Remote Watch Pass. You are not using remote access, so this does not apply.
-  - Hardware transcoding requires a Plex Pass. Direct play (the client plays the file as is) needs no transcoding.
-  - A plex.tv account is required, and sign-in goes through Plex's cloud. That is a small step away from strict local-first.
-  - A new lifetime Plex Pass rose to $749.99 on July 1, 2026. Monthly and yearly plans are cheaper. Check Plex's plans page before buying anything.
-- **Settings that match your goals:** turn **Remote Access off** in Plex, and keep UPnP off on the eero.
-- **Alternative:** Jellyfin is free and open source, needs no account, and includes hardware transcoding at no cost. It fits local-first better, and it runs on the same layout, so you can test it beside Plex.
-- **Compute:** direct play uses very little CPU. Transcoding for clients that cannot play a file is the heavy case. An Intel iGPU handles it, but Plex only uses it with a Plex Pass.
-- **Cost if wrong:** low to medium. The library files are plain files that either server can read.
-- **Status:** Proposed. Plex is the intended choice. Decide on a Plex Pass only after you see whether you need transcoding.
+  - Plex's server and local streaming are free, but hardware transcoding and remote streaming need a paid Plex Pass, and a plex.tv account is required.
+  - Jellyfin has no paid tiers and no required account. Users and passwords live on your server.
+  - A new lifetime Plex Pass rose to $749.99 on July 1, 2026, which is one reason for the switch.
+- **Trade-offs:** Jellyfin has fewer polished apps than Plex. Your one TV is a Samsung Smart TV. Jellyfin has an official app in Samsung's Tizen store for models from 2021 or later (Tizen 6.0 or higher), though it launched in a limited set of markets first. Older Samsung TVs can sideload the app. Check your TV's model year and search the store for Jellyfin before relying on it. A small streaming device is the fallback.
+- **Settings that match your goals:** forward no ports, and keep Jellyfin's automatic port mapping (UPnP) off, along with UPnP on the eero.
+- **Compute:** direct play uses very little CPU. Transcoding for clients that cannot play a file is the heavy case, and an Intel integrated GPU handles it for free.
+- **Library:** none yet. The plan is to grow one. See `docs/media-library.md`.
+- **Streaming services:** Netflix, Hulu, HBO Max, Prime, Disney+, YouTube, YouTube TV and Paramount stay separate. Their content is locked to their own apps and cannot go into Jellyfin.
+- **Cost if wrong:** low. The library is plain files that Plex or another server can read.
+- **Status:** Decided on 2026-11-25. Plex is no longer in the plan.
 
 ### D15. Media storage and backup tiers
 
-- **Choice:** a separate media drive, sized from your real library, plus a three-tier backup policy.
+- **Choice:** a separate media drive, bought when the library exists and sized from it, plus a three-tier backup policy.
 - **Why:** media is large and mostly replaceable. Photos are irreplaceable. They should not share a disk or a backup budget.
 - **Sizing (rough, check your own files):**
 
@@ -260,10 +260,10 @@ Status values: Decided, Open.
 - **Drive options for Option A:** a second internal 3.5" drive if the case has room, or an external USB drive. External drives can sleep or disconnect, which is tolerable for replaceable media and not for photos. A large library is the main reason to revisit Option B.
 - **Backup tiers:**
   - Tier 1, photos: three copies (live, external drive, encrypted cloud).
-  - Tier 2, system and configs: Plex database and VM backups on the external drive, configs in git.
+  - Tier 2, system and configs: Jellyfin database and VM backups on the external drive, configs in git.
   - Tier 3, media: no cloud copy. Keep the original discs or purchase records. Copy to the external drive only if there is space.
-- **Budget impact:** a media drive adds roughly $90 to $250 depending on size. Option A then totals about $770 to $1,385, so the top end passes the $1,200 ceiling. Size the media drive to what you actually own.
-- **Status:** Open until the library size is known.
+- **Budget impact:** deferred. When you add a media drive it costs roughly $90 to $250 depending on size, which takes Option A to about $770 to $1,385. The top end passes the $1,200 ceiling, so size the drive to what you actually own.
+- **Status:** Deferred. No library exists yet. Buy the drive when one does.
 
 ## Failure walkthrough
 
@@ -282,10 +282,11 @@ For each scenario: the planned answer, what you need to build so the answer is t
 | Accidental deletion or ransomware | Live data can be damaged. The unplugged external drive and the cloud copy are safe | Keep the external drive unplugged between backups. Use cloud versioning if offered | [ ] |
 | Forgejo down | The main repo is unavailable. The GitHub mirror still has it | Set up the push mirror and check it | [ ] |
 | Tablet battery swells | A fire risk | Charge limits through the plug. Replace swollen batteries immediately | [ ] |
-| Media drive fails | Movies, shows and music on it are gone. Photos are safe | Keep original discs or purchase records. Back up the Plex database in the VM backups | [ ] |
-| Plex VM breaks | Plex is down. The media files are untouched | Restore the Plex VM from its Proxmox backup. The library rescans | [ ] |
-| Internet down while watching | Local playback may or may not work, because Plex signs in through its cloud | Test it as a drill, and keep a backup plan such as a local file player | [ ] |
+| Media drive fails | Movies, shows and music on it are gone. Photos are safe | Keep original discs or purchase records. Back up the Jellyfin database in the VM backups | [ ] |
+| Jellyfin VM breaks | Jellyfin is down. The media files are untouched | Restore the Jellyfin VM from its Proxmox backup. The library rescans | [ ] |
+| Internet down while watching | Local playback should keep working, because Jellyfin has no cloud sign-in. Metadata for newly added items will not download until the internet returns | Test it as a drill | [ ] |
 | Heavy transcode during a photo import | The server slows down for everything | Schedule imports for off-hours. Prefer direct play | [ ] |
+| A streaming app breaks after the Pi-hole switch | Netflix, Hulu or another app stops loading | Allowlist the blocked domain in Pi-hole, or turn Custom DNS off in the eero app to go back | [ ] |
 
 ### What changes with a NAS (Option B)
 
@@ -354,8 +355,9 @@ Do these before trusting the system with the only copy of anything.
 | DNS fallback | Turn off Pi-hole briefly | Browsing keeps working | After Pi-hole is set up |
 | Fresh clone | Clone the GitHub repo into a new folder | All files are present | Now |
 | Radio backups | Download the Zigbee and Z-Wave network backups | Files saved with the backups | After pairing |
-| Plex direct play | Play a movie to your TV from the server | It plays without transcoding | After Plex is set up |
-| Plex offline | Turn the internet off at the modem and play a local file | Playback works, or you know it does not | After Plex is set up |
+| Jellyfin direct play | Play a video to your TV from the server | It plays without transcoding | After Jellyfin is set up |
+| Jellyfin offline | Turn the internet off at the modem and play a local file | Playback works | After Jellyfin is set up |
+| Streaming apps | After switching DNS, open each streaming app on the TV | Each one loads and plays | After Pi-hole is set up |
 
 Repeat the restore drills about every three months.
 
@@ -368,8 +370,9 @@ Repeat the restore drills about every three months.
 - [ ] Whether to buy the eero instead of renting. Compare the monthly fee against the purchase price.
 - [ ] How to back up the Zigbee and Z-Wave networks. Check the Home Assistant documentation for each.
 - [ ] Whether to add a mirrored second drive later (Option A needs a case with two bays).
-- [ ] Media library size and type, which sets the media drive size and may reopen Option B.
-- [ ] Plex or Jellyfin, and whether a Plex Pass is worth it after testing direct play.
+- [ ] Media library: none yet. Its size and type decide the media drive, and a large library may reopen Option B.
+- [x] Media server: Jellyfin, chosen 2026-11-25. Plex is out of the plan.
+- [ ] Samsung TV model year, and whether the Jellyfin app is available for it (sideload or a streaming device if not).
 - [ ] Where the media drive goes (second internal drive or external).
 
 ## Before you buy anything
@@ -378,5 +381,5 @@ Repeat the restore drills about every three months.
 - [ ] Every listing is checked against D2 and `docs/marketplace-shopping.md`
 - [ ] The router check in `docs/network-plan.md` is complete
 - [ ] The backup drive and UPS are in the budget, not an afterthought
-- [ ] The media library size is known and the media drive is in the budget
+- [ ] The media drive is deferred until a library exists, and its cost is kept in reserve
 - [ ] You have read the failure walkthrough and know what you still need to build

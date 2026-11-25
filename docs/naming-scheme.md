@@ -39,6 +39,7 @@ Pick names once and keep them. Renaming entities later breaks dashboards and aut
 | Home Assistant VM | `homeassistant` |
 | Immich VM | `immich` |
 | Forgejo container | `forgejo` |
+| Jellyfin container or VM | `jellyfin` |
 | Test VM | `test-` plus a short label |
 
 Proxmox IDs: 100s for infrastructure, 200s for apps, 900s for tests.

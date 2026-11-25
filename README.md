@@ -1,20 +1,8 @@
 # Homelab
 
-Plans, configs and notes for my home server: Proxmox, Pi-hole, Home Assistant, Immich and Forgejo. No outside access, local first.
+Plans, configs and notes for my home server: Proxmox, Pi-hole, Home Assistant, Immich, Forgejo and Jellyfin. No outside access, local first.
 
 Last updated: 2026-11-25
-
-## Getting Started
-
-- If you have high level questions, read `/docs/homelab_guide_for_everyone.md`
-
-### Documentation
-
-- If you have more technical questions about our plan, read `/docs/homelab_plan.md`
-- If you want to see diagrams laid out, read `/docs/diagrams/homelab_flow_diagrams.md`
-
-
-
 
 ## Folder map
 
@@ -26,8 +14,11 @@ homelab/
     devices.md                      inventory of sensors and devices
     naming-scheme.md                how to name rooms, devices, VMs
     network-plan.md                 addresses, DNS, router checks
+    flow-diagrams.md                today's flow and the full plan, as diagrams
+    architecture.md                 design options, decisions, failure walkthrough, runbooks
     server-day-checklist.md         what to do when the hardware arrives
     home-assistant-study-guide.md   concepts, examples and a short quiz
+    media-library.md                Jellyfin plan: folders, growing, backup tiers
     password-manager.md             short version, with a link to the full guide
     ssh-setup.md                    SSH key walkthrough for Windows
     marketplace-shopping.md         what to buy used, what to check, how to set alerts
@@ -60,21 +51,25 @@ Status key: `[x]` done, `[ ]` to do, `[-]` skipped on purpose.
 ### 2. Practice on the PC
 
 - [-] Skipped on purpose: no VM managers on the PC
-- [x] Read `docs/home-assistant-study-guide.md` instead, and try the quiz at the end
+- [ ] Read `docs/home-assistant-study-guide.md` instead, and try the quiz at the end
 
 ### 3. Prep the repo
 
 - [x] Local repo and private GitHub repo set up
-- [x] Commit this starter set of files
+- [ ] Commit this starter set of files
 - [ ] Fill in the rooms in `docs/devices.md`
 - [ ] Agree the room and device names in `docs/naming-scheme.md`
 - [ ] Fill in the subnet and reservations in `docs/network-plan.md`
 
 ### 4. Router check
 
-- [x] Log into the router and confirm it can reserve a fixed address (DHCP reservation)
-- [x] Confirm it lets me change the DNS server it hands out
-- [ ] Note the router's model and any limits in `docs/network-plan.md`
+- [x] Router is an eero (rented from the ISP), connected to an owned modem
+- [x] Router can reserve fixed addresses (Reservations & Port Forwarding in the eero app)
+- [x] Router lets me set custom DNS (no eero Plus, so the setting is not blocked)
+- [x] Leave IPv6 off for now
+- [ ] Note the eero model, subnet and DHCP range in `docs/network-plan.md`
+- [ ] Confirm the modem is modem-only (not a router combo)
+- [ ] Find the monthly eero rental fee, and decide about buying later
 
 ### 5. Photo move prep
 
@@ -88,6 +83,17 @@ Status key: `[x]` done, `[ ]` to do, `[-]` skipped on purpose.
 - [ ] Generate an SSH key and add it to GitHub (`docs/ssh-setup.md`)
 - [ ] Work through the Home Assistant study guide
 - [ ] Set up Marketplace and eBay alerts from `docs/marketplace-shopping.md`
+
+### 7. Before spending
+
+- [x] Decide Option A (one box) over B (server plus NAS), 2026-11-25
+- [ ] Start the media plan in `docs/media-library.md`. There is no library yet, so the media drive is deferred
+- [x] Choose Jellyfin over Plex, 2026-11-25
+- [ ] Review the open decisions in `docs/architecture.md`
+- [ ] Find the Samsung TV's model year and check for the Jellyfin app (`docs/media-library.md`)
+- [ ] Settle or accept the other open decisions
+- [ ] Walk through the failure scenarios and close the gaps you care about
+- [ ] Check every listing against the architecture before buying
 
 ## Related docs
 

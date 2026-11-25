@@ -42,3 +42,9 @@ Status values: Not paired, Paired, Retired.
 
 - Pair each device once, directly to Home Assistant, after the radio stick is installed.
 - If a device was paired to another controller before, factory reset it first.
+
+## Other devices
+
+| Device | Model and year | Connection | Notes |
+|---|---|---|---|
+| Samsung Smart TV | | Prefer Ethernet | The only Jellyfin client. Check the model year for the Jellyfin app. Also runs the streaming apps (Netflix, Hulu, HBO Max, Prime, Disney+, YouTube, YouTube TV, Paramount) |

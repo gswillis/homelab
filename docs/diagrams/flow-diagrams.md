@@ -37,7 +37,7 @@ Key points:
 
 ## 2. How it fits into the full plan
 
-Once the server runs, Forgejo becomes the main home for your repo, and GitHub stays as the offsite mirror. Photos move from Google Photos to Immich on your own hard drive. Plex serves movies, shows and music from a separate media drive to your TVs over the home network. Option A (one box) is the chosen design. Home Assistant talks to your sensors through the two USB radio sticks, and the UPS keeps the router and server running through short power cuts.
+Once the server runs, Forgejo becomes the main home for your repo, and GitHub stays as the offsite mirror. Photos move from Google Photos to Immich on your own hard drive. Jellyfin will serve movies, shows and music from a separate media drive to your TVs over the home network, once you have a library. Option A (one box) is the chosen design. Home Assistant talks to your sensors through the two USB radio sticks, and the UPS keeps the router and server running through short power cuts.
 
 ```mermaid
 flowchart TB
@@ -56,10 +56,10 @@ flowchart TB
             HA["Home Assistant - smart home hub"]
             IMMICH["Immich - photos and video"]
             FORGEJO["Forgejo - git server"]
-            PLEX["Plex - movies, shows, music"]
+            JELLYFIN["Jellyfin - movies, shows, music"]
             SSD["NVMe SSD - Proxmox and VMs"]
             HDD["4 TB hard drive - photo library"]
-            MEDIA["Media drive - size to be decided"]
+            MEDIA["Media drive - added when a library exists"]
             ZB["Zigbee stick"]
             ZW["Z-Wave stick"]
         end
@@ -69,7 +69,7 @@ flowchart TB
         PHONE["Phones with Immich app"]
         SENSORS["Zigbee and Z-Wave sensors"]
         TABLET["Control tablet"]
-        TV["TVs and streaming devices"]
+        TV["Samsung Smart TV"]
         INFO["Info display"]
     end
 
@@ -83,8 +83,8 @@ flowchart TB
 
     PHONE -->|"auto-upload on home Wi-Fi only"| IMMICH
     IMMICH --> HDD
-    TV -->|"stream over home network only"| PLEX
-    PLEX --> MEDIA
+    TV -->|"stream over home network only"| JELLYFIN
+    JELLYFIN --> MEDIA
     MEDIA -.->|"optional copy"| BACKUP
 
     SENSORS -.->|"radio"| ZB
@@ -119,7 +119,8 @@ Legend:
 | Main git home | GitHub | Forgejo on the server |
 | GitHub's role | Primary copy | Offsite mirror |
 | Photos | Google Photos | Immich on your own hard drive, with a backup drive |
-| Media | Not set up here | Plex on a separate media drive, local network only |
+| Streaming services | Netflix, Hulu, HBO Max, Prime, Disney+, YouTube, YouTube TV, Paramount in their own apps | Unchanged. They stay separate from Jellyfin. Test them after the Pi-hole switch |
+| Media | Not set up here | Jellyfin on a separate media drive, added once a library exists, local network only |
 | Smart home | None | Home Assistant with Zigbee and Z-Wave sticks |
 | Ad blocking | None | Pi-hole, set as your network's DNS |
 | Power protection | None | UPS for the server, router and modem |

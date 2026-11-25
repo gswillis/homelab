@@ -18,9 +18,12 @@ Target: a used small-form-factor desktop to run Proxmox. Budget about $150 to $3
 ## Check in each listing
 
 - [ ] CPU is Intel 8th generation or newer, i5 or better
+- [ ] CPU has no "F" suffix (for example i5-8500, not i5-8400F), so it has integrated graphics for Jellyfin hardware transcoding
 - [ ] RAM is 16 GB or more, or there are free slots to add it
 - [ ] Has an NVMe slot or a 2.5" bay for the boot drive
 - [ ] Has a free 3.5" bay for the photo drive
+- [ ] Has room for a second drive for media later (a second bay, or plan an external drive)
+- [ ] Power supply is big enough for two hard drives (ask for the wattage on the label)
 - [ ] At least 4 USB ports, with a couple of them USB 2.0 if possible
 - [ ] Has Ethernet (almost all do)
 - [ ] The seller says the BIOS is not locked with an admin password

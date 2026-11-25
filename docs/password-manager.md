@@ -23,6 +23,7 @@ Check current pricing and plan limits on each vendor's site before signing up.
 - Router admin login
 - Proxmox, Pi-hole, Home Assistant, Immich and Forgejo logins
 - GitHub login and recovery codes
+- Jellyfin admin login
 - SSH key passphrase
 - Z-Wave PINs, QR codes and DSK labels (attach photos), including the Wave Plug US PIN
 - Cloud backup login and encryption key

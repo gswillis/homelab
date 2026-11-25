@@ -31,6 +31,7 @@ Work top to bottom. Change one thing at a time and test after each step. Take a 
 - [ ] Test it from one device by setting that device's DNS to the Pi-hole address
 - [ ] Only then set the router's DNS to Pi-hole, with a fallback DNS
 - [ ] Check that normal browsing still works
+- [ ] Test the streaming apps on the TV (Netflix, Hulu, HBO Max, Prime, Disney+, YouTube, YouTube TV, Paramount) and allowlist any blocked domain
 
 ## 4. Home Assistant
 
@@ -53,22 +54,32 @@ Work top to bottom. Change one thing at a time and test after each step. Take a 
 - [ ] Install the phone app and test auto-upload on home Wi-Fi
 - [ ] Do the Google Takeout import only after the backup drive exists
 
-## 6. Forgejo
+## 6. Jellyfin
+
+- [ ] Create the `jellyfin` container or VM and give it a fixed address
+- [ ] Mount the media drive and follow the folder layout in `docs/media-library.md`
+- [ ] Pass the Intel integrated graphics through to Jellyfin if you need hardware transcoding (it is free)
+- [ ] Keep Jellyfin's automatic port mapping (UPnP) off
+- [ ] Add the libraries and test direct play from the Samsung TV
+- [ ] Install the Jellyfin app on the TV (store first, sideload if the TV is too old)
+
+## 7. Forgejo
 
 - [ ] Create the `forgejo` container
 - [ ] Create a private `homelab` repo there and add it as a second remote
 - [ ] Set up a push mirror to the private GitHub repo
 
-## 7. Backups and power
+## 8. Backups and power
 
 - [ ] Schedule Proxmox backups of the VMs to the external USB drive
 - [ ] Back up the photo library to the external drive
+- [ ] Include the Jellyfin VM in the Proxmox backups (the media files themselves are optional)
 - [ ] Restore one small backup to prove it works
 - [ ] Set up an encrypted cloud copy, if you decide to use one
 - [ ] Connect the UPS by USB and set up NUT for automatic shutdown
 - [ ] Plug the router and modem into the UPS
 
-## 8. Final checks
+## 9. Final checks
 
 - [ ] No port forwarding, and UPnP is off on the router
 - [ ] Every service has a unique password in the password manager
