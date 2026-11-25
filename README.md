@@ -60,20 +60,20 @@ Status key: `[x]` done, `[ ]` to do, `[-]` skipped on purpose.
 ### 2. Practice on the PC
 
 - [-] Skipped on purpose: no VM managers on the PC
-- [ ] Read `docs/home-assistant-study-guide.md` instead, and try the quiz at the end
+- [x] Read `docs/home-assistant-study-guide.md` instead, and try the quiz at the end
 
 ### 3. Prep the repo
 
 - [x] Local repo and private GitHub repo set up
-- [ ] Commit this starter set of files
+- [x] Commit this starter set of files
 - [ ] Fill in the rooms in `docs/devices.md`
 - [ ] Agree the room and device names in `docs/naming-scheme.md`
 - [ ] Fill in the subnet and reservations in `docs/network-plan.md`
 
 ### 4. Router check
 
-- [ ] Log into the router and confirm it can reserve a fixed address (DHCP reservation)
-- [ ] Confirm it lets me change the DNS server it hands out
+- [x] Log into the router and confirm it can reserve a fixed address (DHCP reservation)
+- [x] Confirm it lets me change the DNS server it hands out
 - [ ] Note the router's model and any limits in `docs/network-plan.md`
 
 ### 5. Photo move prep
