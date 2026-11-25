@@ -1,6 +1,6 @@
 # Homelab
 
-[[TOC]]
+[[ TOC ]]
 
 ## Getting Started
 
